@@ -1,78 +1,15 @@
-PATH = '~/Documents/Sonic\ Pi\ Projects/much-ado-about-sonic-pi/music/untitled-spacey-music/'
+PATH = '/home/euwbah/Documents/Sonic Pi Projects/much-ado-about-sonic-pi/music/untitled-spacey-music/'
 def import(localdir)
   run_file PATH + localdir
 end
 
-import '/core.sonicpi.rb'
+import 'core.sonicpi.rb'
+import 'instruments.sonicpi.rb'
+import 'fx.sonicpi.rb'
+
+# Some directives for sonic-pi-autocomplete atom plugin
 
 #@ play wail 2 :fm
-
-def wail(*args)
-  use_synth :fm
-  play *args
-end
-
-
-#interpolate amp in separate thread
-#note, resolution in beats, hash of time => value
-def iAmp(n, res, values)
-  in_thread do
-    beat = 0
-    prev_amp_value = n.args[:amp]
-    #By beat (timestamp - res), the control for final target value must be sent
-    values.each do |timestamp, amp_value|
-      ticksleft = (timestamp - beat) / res
-      currtick = 1 #currtick starts with one due to aforementioned reason... ^^^^
-      while currtick <= ticksleft
-        c n, amp: (1.0 * (ticksleft - currtick) / ticksleft * (prev_amp_value - amp_value)) + amp_value
-        currtick += 1
-        beat += res
-        sleep res
-      end
-      prev_amp_value = amp_value
-    end
-  end
-end
-
-
-#similar to iAmp
-def iNote(n, res, values)
-  in_thread do
-    beat = 0
-    prev_note_value = n.args[:note]
-    values.each do |timestamp, note_value|
-      ticksleft = (timestamp - beat) / res
-      currtick = 1
-      print beat, timestamp, note_value
-      while currtick <= ticksleft
-        print ticksleft, currtick
-        if note_value != -1
-          c n, note: (1.0 * (ticksleft - currtick) / ticksleft * (prev_note_value - note_value)) + note_value
-        end
-        currtick += 1
-        beat += res
-        sleep res
-      end
-      if note_value != -1
-        prev_note_value = note_value
-      end
-    end
-  end
-end
-
-#Custom FX chain for ethereal sound
-#foo is a lambda fn with 0 args
-def ethereal(foo)
-  with_fx :rlpf, cutoff: 95, res: 0.01 do
-    with_fx :echo, phase: 1.5, decay: 11, mix: 0.3 do
-      with_fx :gverb, mix: 0.45, damp: 0.5, room: 25, release: 6, spread: 0.8 do
-        foo.call
-      end
-    end
-  end
-end
-
-
 
 use_bpm 90
 
@@ -94,13 +31,45 @@ ethereal( lambda do
                            2 => mult(:c4, 15, 8),
                            11.5 => mult(:c4, 15, 8),
                            12 => mult(:c4, 13, 8)})
+            sleep 16
+
+            n = wail mult(:c5, 5, 4), sustain: 5, amp: 0 # e5
+
+            iAmp(n, 0.5, {
+              2 => 0.8,
+              3 => 0.3,
+              5 => 0.1
+            })
+
+            iNote(n, 0.5, {
+              3.5 => -1,
+              4 => mult(:c5, 6, 4)
+            })
+
+            sleep 7
+
+            n = wail mult(:c5, 12, 8), attack: 0.02, sustain: 0, release: 0.2, amp: 0.1
+
+            sleep 0.125
+
+            n = wail mult(:c5, 11.5, 8), attack: 0.05, sustain: 4
+
+            iNote(n, 0.25, {
+              0.25 => mult(:c5, 11, 8),
+              2 => -1,
+              3 => mult(:c4, 14, 5),
+              10 => -1,
+              11 => mult(:c4, 9, 4)
+            })
+
+            sleep 14
 
             sleep 7
 
             f = wail mult(:f3, 1, 1), attack: 12, sustain: 26, release: 7, amp: 0.5
             sleep 12
 
-            septmin7 = wail mult(mult(:f4, 5, 4), 3, 2), attack: 0, sustain: 6, release: 1, amp: 0
+            septmin7 = wail mult(mult(:f4, 5, 4), 3, 2), attack: 0, sustain: 7, release: 3, amp: 0
             septmin3 = wail mult(:f4, 5, 4), attack: 4, sustain: 5, release: 1, amp: 0.2
             wail mult(:f4, 3, 2), attack: 4, sustain: 5, release: 1, amp: 0.2
             wail mult(:f4, 1, 1), attack: 4, sustain: 5, release: 1, amp: 0.2
@@ -111,7 +80,7 @@ ethereal( lambda do
 
             sleep 10
 
-            septmin7 = wail mult(mult(:f4, 5, 4), 3, 2), attack: 0.5, sustain: 10, release: 1
+            septmin7 = wail mult(mult(:f4, 5, 4), 3, 2), attack: 1.5, sustain: 10, release: 2
             septmin3 = wail mult(:f4, 5, 4), attack: 4, sustain: 6, release: 1, amp: 0.2
             wail mult(:f4, 3, 2), attack: 4, sustain: 6, release: 1, amp: 0.2
             wail mult(:f4, 1, 1), attack: 4, sustain: 6, release: 1, amp: 0.2
