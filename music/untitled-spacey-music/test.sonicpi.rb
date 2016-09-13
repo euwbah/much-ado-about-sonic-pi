@@ -13,22 +13,36 @@ import 'fx.sonicpi.rb'
 
 use_bpm 90
 
-ethereal( lambda do
-            use_synth_defaults note_slide: 0.5, amp: 0.5, amp_slide: 0.5
+ethereal do
+    use_synth_defaults note_slide: 0.5, amp: 0.5, amp_slide: 0.5
+
+    septmin7 = wail mult(mult(:f4, 5, 4), 3, 2), attack: 0, sustain: 4.5, release: 0.4, amp: 0
+    septmin3 = wail mult(:f4, 5, 4), attack: 4, sustain: 5, release: 1, amp: 0.12
 
 
+    iAmp(septmin7, 0.5, {2.5 => 0.6, 3.5 => 0.1,})
+    iNote(septmin7, 0.5, {
+      3 => -1, 3.5 => mult(mult(:f4, 10, 9), 3, 2)
+    })
 
-            n = wail mult(:c5, 12, 8), attack: 0.02, sustain: 0, release: 0.2, amp: 0.1
+    sleep 5.8
 
-            sleep 0.125
+    n = wail mult(:f4, 10, 4), attack: 0.074, sustain: 0.05, release: 0, amp: 0.2, note_slide: 0.04
+    sleep 0.08
+    c n, note: mult(:f4, 9.1, 4)
+    sleep 0.04
 
-            n = wail mult(:c5, 11.5, 8), attack: 0.05, sustain: 4
+    septmin7 = wail mult(:f4, 9, 4), attack: 0.1, sustain: 4, release: 4, amp: 0.3
+    iAmp(septmin7, 0.5, {2.5 => 0.6, 3.5 => 0.1})
+    iNote(septmin7, 0.5, {
+      1 => -1, 1.5 => mult(:g4, 5, 3)
+    })
 
-            iNote(n, 0.25, {
-              0.25 => mult(:c5, 11, 8),
-              2 => -1,
-              3 => mult(:c4, 14, 5),
-              10 => -1,
-              11 => mult(:c4, 9, 4)
-            })
-end)
+    sleep 1.5
+
+    wail mult(:g4, 3, 2), attack: 0.5, sustain: 8, release: 1, amp: 0.12
+    wail mult(:g4, 1, 1), attack: 0.5, sustain: 8, release: 1, amp: 0.12
+    wail mult(:e4, 1, 1), attack: 0.5, sustain: 8, release: 1, amp: 0.12
+
+    sleep 6
+end
