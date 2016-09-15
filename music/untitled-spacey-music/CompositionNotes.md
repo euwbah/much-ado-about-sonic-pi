@@ -2,6 +2,32 @@
 *weird spacey music*
 ### 2/9/2016 (Work In Progress)
 
+### Cool Ideas:
+- [x] Synth layering
+- [x] FX Presets
+- [x] Alternate tuning systems
+- [ ] 29 / 8 time signature (15 + 14)
+- [ ] Improvised drum line with form & marked downbeats / upbeats
+- [ ] Motif Generator
+
+### Song Structure:
+
+#### Mvt I: Solo Introductory passage with some flute-like synth
+- Ambient
+- Formless
+
+#### Mvt II: D&B
+##### Time Signature
+29 / 8 time:
+`|| 4D 4U 3D 3A | 2D 4D 3U 3A 3A || 4F 4U 3D 3A | 3D 3A 3A 3A 3A || Downbeat, Upbeat, Any Accent, Fill (no accent)`
+##### Chord Progression
+Notes in brackets are notes anchoring the equivalent notes of the previous chord (because just intonation is used)
+`|    Fmaj9    |      %      | Abmaj9 (C G) | ??? `
+##### Form:
+- 1 iteration of chords with just the glitched pads
+- Sudden entrance of drums and binaural reese bass
+- ??
+
 ______________
 
 *So...* I've stumbled upon the world of microtonal music.

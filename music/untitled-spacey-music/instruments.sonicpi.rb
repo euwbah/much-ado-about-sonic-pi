@@ -9,6 +9,13 @@ define :wail do |*args|
   return ret
 end
 
+define :pad do |*args|
+  ret = []
+  use_synth :tech_saws
+  ret.push play(*args)
+  return ret
+end
+
 define :glitchNoise do |duration|
   use_synth :cnoise
   x = nil
@@ -39,4 +46,34 @@ define :chime do |note, amp, duration=1|
     end
   end
   return ret
+end
+
+define :kick do |amp=0.6|
+  sample :bd_tek, amp: amp * 1
+  sample :drum_bass_hard, amp: amp
+  use_synth :sine
+  n = play note: :c4, note_slide: 0.02, attack_level: 5, decay: 0.15, release: 0.2, sustain: 0, amp: amp * 1.4
+  control n, note: :e1
+end
+
+define :snare do |amp=0.6|
+  eq_params = [
+    {:freq => 6000, :res => 0.2, :db => 7},
+    {:freq => 14000, :res => 0.1, :db => 9},
+    {:freq => 16000, :res => 0.4, :db => -14}
+  ]
+  eq eq_params do
+    use_synth :noise
+    play :c4, attack_level: 1.8, decay: 0.04 * amp + 0.04, sustain_level: 0.2 * amp + 0.2, sustain: 0, release: 0.08 * amp + 0.2, amp: amp
+
+    with_fx :distortion, distort: 0.3 do
+      use_synth :sine
+      fundamental = midi_to_hz(:as4)
+      cylindricalHarmonics = [[1, 1], [1.593, 0.1], [2.135, 0.03], [2.3, 0.1], [2.65, 0.03], [2.92, 0.03], [3.16, 0.01], [3.50, 0.008]]
+      for mult_amp in cylindricalHarmonics
+        n = play hz_to_midi(fundamental * mult_amp[0]), note_slide: 0.01 * amp + 0.005, sustain: 0, release: 0.15 * amp + 0.2, attack_level: 2, decay: 0.05, amp: 1.5 * amp * mult_amp[1]
+        control n, note: hz_to_midi(fundamental * mult_amp[0]) - 12
+      end
+    end
+  end
 end

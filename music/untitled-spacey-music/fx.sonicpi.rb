@@ -1,3 +1,18 @@
+def eq args, &process
+  currProc = process
+  for arg in args
+    freq = hz_to_midi(arg[:freq].nil? ? 1200 : arg[:freq])
+    res = arg[:res].nil? ? 0 : arg[:res]
+    db = arg[:db].nil? ? 0 : arg[:db]
+    currProc = encapsulate ({:freq=>freq, :res=>res, :db=>db, :process=>currProc})
+    repFn = lambda do |hash|
+      with_fx :band_eq, freq: hash[:freq], res: hash[:res], db: hash[:db], &(hash[:process])
+    end
+    currProc = compose repFn, currProc
+  end
+  currProc.call nil
+end
+
 #Custom FX chain for ethereal sound
 #foo is a lambda fn with 0 args
 def ethereal(&foo)
@@ -26,8 +41,22 @@ end
 
 def glitch(&process)
   with_fx :slicer, phase: 0.25, amp_min: 1 do |glitch_slicer|
-    with_fx :panslicer, wave: 1, phase: 0.25, smooth: 0.2 do
+    with_fx :panslicer, wave: 2, phase: 0.8, smooth: 0.2 do
       process.call glitch_slicer
+    end
+  end
+end
+
+def sidechain(*fns)
+  with_fx :compressor, slope_below: 1.6, slope_above: 0.6, threshold: 0.3 do
+    fns.each do |f|
+      in_thread do
+        if f.class == "Array"
+          f
+        else
+          f.call
+        end
+      end
     end
   end
 end

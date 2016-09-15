@@ -1,11 +1,23 @@
+def compose f, g
+  return lambda do |arg|
+    f.call(g.call arg)
+  end
+end
+
+def encapsulate f, args*
+  Proc.new do
+    f
+  end
+end
+
 #For n-limit ratioized intonation
-def mult(baseFreq, numerator, denominator)
+def mult baseFreq, numerator, denominator
   return hz_to_midi(midi_to_hz(baseFreq) * 1.0 * numerator / denominator)
 end
 
 #@control c
 #method shortener for controlling multiple synth's params
-def c(*args)
+def c *args
   for node in args[0]
     control node, args[1]
   end
@@ -13,7 +25,7 @@ end
 
 #interpolate amp in separate thread
 #note, resolution in beats, hash of time => value
-def iAmp(n, res, values)
+def iAmp n, res, values
   in_thread do
     beat = 0
     prev_amp_value = n[0].args[:amp]
@@ -34,7 +46,7 @@ end
 
 
 #similar to iAmp
-def iNote(n, res, values)
+def iNote n, res, values
   in_thread do
     beat = 0
     prev_note_value = n[0].args[:note]
@@ -59,7 +71,7 @@ def iNote(n, res, values)
 end
 
 # interpolate
-def i(n, argSymbol, res, values)
+def i n, argSymbol, res, values
   in_thread do
     beat = 0
     prev_value = n[0].args[argSymbol]

@@ -4,14 +4,18 @@ def import(localdir)
 end
 
 import 'core.sonicpi.rb'
-import 'instruments.sonicpi.rb'
 import 'fx.sonicpi.rb'
+import 'instruments.sonicpi.rb'
 
 # Some directives for sonic-pi-autocomplete atom plugin
 
 #@ play wail 2 :fm
 
 use_bpm 90
+
+# XXX: Skips to mvt2 immediately. Delete these lines when rendering
+# import 'mvt2.sonicpi.rb'
+# stop
 
 ethereal do
   use_synth_defaults note_slide: 0.5, amp: 0.5, amp_slide: 0.5, divisor_slide: 1
@@ -54,11 +58,12 @@ ethereal do
 
   sleep 8
 
-  n = wail mult(:c5, 12, 8), attack: 0.02, sustain: 0, release: 0.2, amp: 0.1
+  n = wail mult(:c5, 12, 8), attack: 0.02, sustain: 0, release: 0.2, amp: 0.1, note_slide: 0.06
+  sleep 0.06
+  c n, note: mult(:c5, 11.5, 8)
+  sleep 0.06
 
-  sleep 0.125
-
-  n = wail mult(:c5, 11.5, 8), attack: 0.05, sustain: 9, release: 2, note_slide: 0.25
+  n = wail mult(:c5, 11.2, 8), attack: 0.05, sustain: 9, release: 2, note_slide: 0.25
 
   iNote(n, 0.25, {
     0.25 => mult(:c5, 11, 8),
@@ -183,20 +188,8 @@ ethereal do
   wail mult(:g4, 1, 1), attack: 0.5, sustain: 8, release: 1, amp: 0.12
   wail mult(:e4, 1, 1), attack: 0.5, sustain: 8, release: 1, amp: 0.12
 
-  sleep 6
+  sleep 10
 
 end
 
-glitch do |glitch_slicer|
-  ethereal do
-      use_synth_defaults note_slide: 0.5, amp: 0.5, amp_slide: 0.5
-
-      wail mult(:f4, 1, 1), attack: 4, sustain: 4, release: 4, amp: 0.5
-      wail mult(:f4, 5, 4), attack: 4, sustain: 4, release: 4, amp: 0.5
-
-      control glitch_slicer, amp_min_slide: 12
-      control glitch_slicer, amp_min: 0
-
-      sleep 12
-  end
-end
+import 'mvt2.sonicpi.rb'
