@@ -4,7 +4,7 @@ use_bpm 132
 glitch_pad = Proc.new do
   glitch do |glitch_slicer|
     stereoize 0.007, 0.6 do
-      with_fx :rlpf, cutoff: 50, res: 0.4, cutoff_slide: 1, amp: 4 do |lpf|
+      with_fx :rlpf, cutoff: 50, res: 0.4, cutoff_slide: 1, amp: 3 do |lpf|
         i [lpf], :cutoff, 1.0, {14.5 * 4 => 120}
         control glitch_slicer, amp_min_slide: 12
         control glitch_slicer, amp_min: 0
@@ -42,7 +42,7 @@ glitch_pad = Proc.new do
           pad eb_anchor, sustain: 14.5, release: 0, amp: 0.2
 
           if rep == 0
-            control glitch_slicer, amp_min: 0.6
+            control glitch_slicer, amp_min: 0.4
           end
 
           sleep 14.5
@@ -68,10 +68,11 @@ end
 
 drums = Proc.new do
   sleep (14.5 * 4 - 1)
-  sample :sn_dub, amp: 1
+  snare 0.9
   sleep 0.5
-  sample :bd, amp: 1
+  kick 0.9
   sleep 0.5
 end
 
-sidechain drums, glitch_pad
+pad_drum_sidechain_args = { :slope_below => 1.7, :slope_above => 0.6, :threshold => 0.4, :pre_amp => 1.3 }
+sidechain pad_drum_sidechain_args, drums, glitch_pad

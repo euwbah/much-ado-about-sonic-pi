@@ -47,8 +47,8 @@ def glitch(&process)
   end
 end
 
-def sidechain(*fns)
-  with_fx :compressor, slope_below: 1.6, slope_above: 0.6, threshold: 0.3 do
+def sidechain(compressorParams, *fns)
+  with_fx :compressor, compressorParams do
     fns.each do |f|
       in_thread do
         if f.class == "Array"
@@ -57,6 +57,14 @@ def sidechain(*fns)
           f.call
         end
       end
+    end
+  end
+end
+
+def drum_fx_chain &process
+  with_fx :compressor, slope_below: 1, slope_above: 0.6, threshold: 0.7, relax_time: 0.3 do
+    with_fx :tanh, krunch: 0.05, mix: 0.5 do
+      process.call
     end
   end
 end

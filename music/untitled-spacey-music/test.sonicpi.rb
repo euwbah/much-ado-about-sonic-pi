@@ -6,20 +6,21 @@ end
 import 'core.sonicpi.rb'
 import 'fx.sonicpi.rb'
 import 'instruments.sonicpi.rb'
+import 'drummachine.sonicpi.rb'
 
 # Some directives for sonic-pi-autocomplete atom plugin
 
 #@ play wail 2 :fm
 
-use_bpm 120
+use_bpm 144
 set_control_delta! 0.004
+
+openHatInstance = nil
 live_loop :drs do
-  puts "loop"
-  with_random_seed ring(8, 2, 3, 2).tick do
-    kick ring(0.9, 0.5, 0.7, 0.3).look
-    4.times do |rep|
-      snare rand
-      sleep 0.25
+  with_random_seed ring(4, 4, 4, 7).tick do
+    kick4
+    drum_fx_chain do
+      playDrums
     end
   end
 end

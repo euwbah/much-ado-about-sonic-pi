@@ -49,11 +49,11 @@ define :chime do |note, amp, duration=1|
 end
 
 define :kick do |amp=0.6|
-  sample :bd_tek, amp: amp * 1
-  sample :drum_bass_hard, amp: amp
+  sample :bd_tek, amp: amp * 0.6, attack_level: 1.5, decay: 0.05, rate: 0.8
+  sample :drum_bass_hard, amp: amp * 0.7, attack: 0, release: 0, sustain: 0.01, attack_level: 8, decay: 0.004, rate: 1.4
   use_synth :sine
-  n = play note: :c4, note_slide: 0.02, attack_level: 5, decay: 0.15, release: 0.2, sustain: 0, amp: amp * 1.4
-  control n, note: :e1
+  n = play note: :f4, note_slide: 0.04, attack_level: 5, sustain_level: 0.8, decay: 0.1, release: 0, sustain: 0, amp: amp * 0.3
+  control n, note: :f1
 end
 
 define :snare do |amp=0.6|
@@ -66,14 +66,36 @@ define :snare do |amp=0.6|
     use_synth :noise
     play :c4, attack_level: 1.8, decay: 0.04 * amp + 0.04, sustain_level: 0.2 * amp + 0.2, sustain: 0, release: 0.08 * amp + 0.2, amp: amp
 
-    with_fx :distortion, distort: 0.3 do
+    with_fx :distortion, distort: 0.2 do
       use_synth :sine
       fundamental = midi_to_hz(:as4)
-      cylindricalHarmonics = [[1, 1], [1.593, 0.1], [2.135, 0.03], [2.3, 0.1], [2.65, 0.03], [2.92, 0.03], [3.16, 0.01], [3.50, 0.008]]
+      cylindricalHarmonics = [[1, 1], [1.593, 0.1 * amp], [2.135, 0.03 * amp], [2.3, 0.05 + 0.1 * amp ** 2], [2.65, 0.03], [2.92, 0.03], [3.16, 0.01], [3.50, 0.008]]
       for mult_amp in cylindricalHarmonics
         n = play hz_to_midi(fundamental * mult_amp[0]), note_slide: 0.01 * amp + 0.005, sustain: 0, release: 0.15 * amp + 0.2, attack_level: 2, decay: 0.05, amp: 1.5 * amp * mult_amp[1]
         control n, note: hz_to_midi(fundamental * mult_amp[0]) - 12
       end
     end
   end
+end
+
+def hat(amp, open=false, previousInstance)
+  puts previousInstance
+  returnable = previousInstance
+  eq_params = [
+    {:freq => 6000, :res => 0.1, :db => amp * 6 + 4},
+    {:freq => 10000, :res => 0.5, :db => amp * 6 + 6},
+    {:freq => 15000, :res => 0.1, :db => amp * -12 - 12}
+  ]
+  eq eq_params do
+    if previousInstance != nil and previousInstance.live? and previousInstance.args[:amp] != 0
+      control previousInstance, amp: 0
+      sample :drum_cymbal_pedal, amp: [0.8, 0.3].choose
+    end
+    if open
+      returnable = sample :drum_cymbal_open, amp: amp, amp_slide: 0.05
+    else
+      sample :drum_cymbal_closed, amp: amp
+    end
+  end
+  return returnable
 end

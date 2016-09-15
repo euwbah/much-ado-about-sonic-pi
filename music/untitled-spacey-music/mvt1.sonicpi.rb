@@ -6,6 +6,7 @@ end
 import 'core.sonicpi.rb'
 import 'fx.sonicpi.rb'
 import 'instruments.sonicpi.rb'
+import 'drummachine.sonicpi.rb'
 
 # Some directives for sonic-pi-autocomplete atom plugin
 
