@@ -1,3 +1,4 @@
+# The flutey sound in Mvt I
 define :wail do |*args|
   ret = []
   use_synth :fm
@@ -38,10 +39,10 @@ define :chime do |note, amp, duration=1|
   with_fx :hpf, mix: 0.5, cutoff: 90, amp: 2 do
     with_fx :gverb, room: 312 do
       for i in 1..16
-        ret.push play mult(note, (i * 2) * (0.97 + rand * 0.06), 1), amp: amp / (i**3.5), release: duration / (i**1.06)
+        ret.push play mult(note, (i * 2) * (0.97 + rand * 0.06), 1), amp: amp / (i**3.5), release: duration / (i**1.06), attack: (i / 8.0) ** 2
       end
       for i in 16..32
-        ret.push play mult(note, (i * 2) * (0.85 + rand * 0.3), 1), amp: amp * 0.05 / (i**1.8), attack_level: 1 + i / 2.0, decay: 2, release: duration / (i**1.03)
+        ret.push play mult(note, (i * 2) * (0.85 + rand * 0.3), 1), amp: amp * 0.05 / (i**1.8), attack_level: 1 + i / 2.0, decay: 2, release: duration / (i**1.03), attack: (i / 16.0 - 1) ** 2
       end
     end
   end
@@ -99,3 +100,7 @@ def hat(amp, open=false, previousInstance)
   end
   return returnable
 end
+
+# Other instruments
+import 'drummachine.sonicpi.rb'
+import 'binaural-reese.sonicpi.rb'

@@ -6,7 +6,6 @@ end
 import 'core.sonicpi.rb'
 import 'fx.sonicpi.rb'
 import 'instruments.sonicpi.rb'
-import 'drummachine.sonicpi.rb'
 
 # Some directives for sonic-pi-autocomplete atom plugin
 
@@ -24,7 +23,6 @@ ethereal do
   sleep 2
   c n, note: mult(:c4, 9, 4)
   sleep 8
-
 
   n = wail mult(:c4, 8, 4), sustain: 9, attack: 2, release: 1, amp: 0.4
   iAmp(n, 0.5, {2 => 0.8,
