@@ -8,7 +8,9 @@
 # sync: either the e or the a
 
 #NOTE: :sequence contains an array of Procs
-drum_model = { :openHatInstance => nil, :sequence => [] }
+# playedSequence will hold the sequence that is being currently played.
+# Used to sync the bass drop with the kicks
+drum_model = { :openHatInstance => nil, :sequence => [], :playedSequence => [] }
 
 # Returns true if process is executed, false if not. NOTE: Just a helper function.
 def flag(toBeOrNotToBe, &process)
@@ -19,8 +21,9 @@ def flag(toBeOrNotToBe, &process)
 end
 
 define :playDrums do
-  for process in drum_model[:sequence]
-    puts process
+  drum_model[:playedSequence] = drum_model[:sequence]
+  drum_model[:sequence] = []
+  for process in drum_model[:playedSequence]
     drum_model = process.call(drum_model)
   end
 end
@@ -104,22 +107,22 @@ def snare4 ambiguity=0
   reflected = flag (rand < 0.4 * ambiguity and not postkicked) {seq_kick 0.3 + rand * 0.25}
   seq_hat 0.4 + rand * 0.3, false
   seq_sleep 0.25
-  seq_snare 0.3 + rand * 0.3 if rand < (reflected ? 0.7 : 0.3) - ambiguity / 4
+  seq_snare 0.3 + rand * 0.3 if rand < (reflected ? 0.4 : 0) + ambiguity * 0.3
   seq_hat 0.2 + rand * 0.4, false
   seq_sleep 0.25
 end
 
 def kick3 ambiguity=0
   seq_kick 0.8 + rand*2
-  opened = rand < 0.7
-  seq_hat (opened ? 0.6 : 0.2) + rand * 0.3, rand < 0.7
+  opened = rand < 0.6 - ambiguity * 0.6
+  seq_hat (opened ? 0.6 : 0.3) + rand * 0.3, opened
   seq_sleep 0.25
 
-  ghosted = flag (rand < 0.6) {seq_snare 0.1 + rand * 0.2}
+  ghosted = flag (rand < 0.6 * ambiguity) {seq_snare 0.1 + rand * 0.2}
   seq_hat 0.3 + rand * 0.2, false
   seq_sleep 0.25
 
-  seq_kick (ghosted ? 0.1 : 0.2) + rand * 0.1 if rand < (ghosted ? 0.3 : 0.5)
+  seq_kick (ghosted ? 0.1 : 0.2) + rand * 0.1 if rand < (ghosted ? 0.3 : 0.5) * ambiguity
   seq_hat 0.5 + rand * 0.2, false
   seq_sleep 0.25
 end
@@ -129,12 +132,28 @@ def kick3sync ambiguity=0
   seq_hat 0.3 + rand * 0.2, false
   seq_sleep 0.25
 
-  ghosted = flag (rand < 0.3) {seq_snare 0.1 + rand * 0.3}
+  ghosted = flag (rand < 0.3 * ambiguity) {seq_snare 0.1 + rand * 0.3}
   seq_hat 0.5 + rand * 0.2, false
   seq_sleep 0.25
 
-  seq_snare (ghosted ? 0.1 : 0.3) + rand * 0.2 if rand < (ghosted ? 0.3 : 0.5)
+  seq_snare (ghosted ? 0.1 : 0.3) + rand * 0.2 if rand < (ghosted ? 0 : 0.2) + 0.3 * ambiguity
   seq_hat 0.2 + rand * 0.3, false
+  seq_sleep 0.25
+end
+
+# This emphasises the group of three feel
+def kick33 ambiguity=0
+  seq_kick 0.8 + rand*2
+  opened = rand < 0.7 - ambiguity * 0.5
+  seq_hat (opened ? 0.6 : 0.3) + rand * 0.3, opened
+  seq_sleep 0.25
+
+  ghosted = flag (rand < 0.6 * ambiguity) {seq_snare 0.1 + rand * 0.2}
+  seq_hat 0.3 + rand * 0.2, false
+  seq_sleep 0.25
+
+  seq_snare (ghosted ? 0.1 : 0.2) + rand * 0.1 if rand < (ghosted ? 0.3 : 0.5) * ambiguity
+  seq_hat 0.3 + rand * 0.2, false
   seq_sleep 0.25
 end
 
@@ -142,7 +161,7 @@ def snare3 ambiguity=0
   seq_snare 0.8 + rand * 0.2
   seq_hat 0.5 + rand * 0.2, false
   seq_sleep 0.25
-  reflected = flag (rand < 0.4) {seq_kick 0.3 + rand * 0.25}
+  reflected = flag (rand < 0.4 * ambiguity) {seq_kick 0.2 + rand * 0.25}
   seq_hat 0.2 + rand * 0.3, false
   seq_sleep 0.25
   seq_snare 0.3 + rand * 0.3 if rand < (reflected ? 0.7 : 0.3)
@@ -154,7 +173,7 @@ def snare3sync ambiguity=0
   seq_snare 0.8 + rand * 0.2
   seq_hat 0.1 + rand * 0.4, false
   seq_sleep 0.25
-  reflected = flag (rand < 0.6) {seq_kick 0.3 + rand * 0.25}
+  reflected = flag (rand < 0.6 * ambiguity) {seq_kick 0.2 + rand * 0.25}
   seq_hat 0.6 + rand * 0.2, false
   seq_sleep 0.25
   seq_snare 0.3 + rand * 0.3 if rand < (reflected ? 0.2 : 0.3)
@@ -162,10 +181,23 @@ def snare3sync ambiguity=0
   seq_sleep 0.25
 end
 
+def snare33 ambiguity=0
+  seq_snare 0.8 + rand * 0.2
+  seq_hat 0.5 + rand * 0.3, rand < 0.7 - ambiguity * 2
+  seq_sleep 0.25
+  reflected = flag (rand < 0.2 * ambiguity) {seq_kick 0.2 + rand * 0.25}
+  seq_hat 0.2 + rand * 0.3, false
+  seq_sleep 0.25
+  seq_snare 0.3 + rand * 0.3 if rand < (reflected ? 0.2 : 0.3) * ambiguity
+  seq_hat 0.2 + rand * 0.3, false
+  seq_sleep 0.25
+end
+
 def kick2 ambiguity=0
   seq_kick 0.7 + rand * 0.3
-  seq_hat 0.6 + rand * 0.2, false
+  seq_hat 0.6 + rand * 0.2, rand < -0.4 + ambiguity
   seq_sleep 0.25
+  seq_snare rand * 0.3 if rand < 0.2 * ambiguity
   seq_hat 0.1 + rand * 0.4, false
   seq_sleep 0.25
 end
@@ -176,4 +208,8 @@ end
 
 def any3sync ambiguity=0
   if rand < 0.5 then return kick3sync, ambiguity else return snare3sync, ambiguity end
+end
+
+def any33 ambiguity=0
+  if rand < 0.5 then return kick33, ambiguity else return snare33, ambiguity end
 end

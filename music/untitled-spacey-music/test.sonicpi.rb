@@ -20,7 +20,10 @@ live_loop :drs do
   with_random_seed ring(4, 4, 4, 7).tick do
     kick4
     drum_fx_chain do
-      playDrums
+      use_synth :cnoise
+      n = play :c4, cutoff: 30, cutoff_slide: 0.5, res: 0.86, sustain: 0, release: 0, attack: 0.5
+      control n, cutoff: 103
+      sleep 1
     end
   end
 end

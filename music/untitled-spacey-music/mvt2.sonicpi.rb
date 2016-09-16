@@ -1,4 +1,4 @@
-use_bpm 132
+use_bpm 144
 
 # GLITCH PAD
 glitch_pad = Proc.new do
@@ -67,11 +67,42 @@ glitch_pad = Proc.new do
 end
 
 drums = Proc.new do
-  sleep (14.5 * 4 - 1)
-  snare 0.9
-  sleep 0.5
-  kick 0.9
-  sleep 0.5
+  drum_fx_chain do
+    at 14.5 * 4 - 1.5 do
+      use_synth :cnoise
+      n = play :c4, cutoff: 30, cutoff_slide: 0.5, res: 0.86, sustain: 0, release: 0, attack: 0.5
+      control n, cutoff: 103
+      sleep 0.5
+      snare 0.9
+      sleep 0.5
+      kick 0.9
+      sleep 0.5
+    end
+    sleep (14.5 * 3)
+    8.times do | reps |
+      with_random_seed ring(1337, 42, 1337, 43).tick do
+        kick4       0
+        snare4      0
+        kick3       0
+        snare3sync  0
+        if reps % 2 == 0
+          kick2       0
+          kick4       0
+          snare33     0
+          any33       0
+          any33       0
+        else
+          kick3       0
+          kick33      0
+          snare3      0
+          any33       0
+          any33       0
+        end
+      end
+    end
+    sleep 14.5
+    playDrums
+  end
 end
 
 pad_drum_sidechain_args = { :slope_below => 1.7, :slope_above => 0.6, :threshold => 0.4, :pre_amp => 1.3 }

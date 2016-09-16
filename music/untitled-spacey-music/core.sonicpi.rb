@@ -4,14 +4,14 @@ def compose f, g
   end
 end
 
-def encapsulate f, args*
+def encapsulate f, *args
   Proc.new do
     f
   end
 end
 
 #For n-limit ratioized intonation
-def mult baseFreq, numerator, denominator
+def mult(baseFreq, numerator, denominator)
   return hz_to_midi(midi_to_hz(baseFreq) * 1.0 * numerator / denominator)
 end
 
