@@ -16,9 +16,23 @@ def mult(baseFreq, numerator, denominator)
 end
 
 #@control c
-#method shortener for controlling multiple synth's params
+#method shortener for controlling multiple synth or fx nodes
 def c *args
   for node in args[0]
+    control node, args[1]
+  end
+end
+
+# Same as the above function, but...
+# lets you set param _slide time for each node
+# Accepts multiple parameters (hash KV pairs)
+# Make sure only slidable params are in the arguments
+# XXX: NOTE: Use sparingly, this may be extremely laggy.
+def ct time, *args
+  for node in args[0]
+    args[1].each do |key, value|
+      control node, {key.to_s.concat("_slide").to_sym => time}
+    end
     control node, args[1]
   end
 end

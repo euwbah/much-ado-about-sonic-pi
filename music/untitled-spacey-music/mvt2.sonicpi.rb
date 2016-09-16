@@ -105,5 +105,11 @@ drums = Proc.new do
   end
 end
 
-pad_drum_sidechain_args = { :slope_below => 1.7, :slope_above => 0.6, :threshold => 0.4, :pre_amp => 1.3 }
-sidechain pad_drum_sidechain_args, drums, glitch_pad
+# XXX: BAAAASSSSSSS!!!!
+drop_this = Proc.new do
+  sleep 14.5 * 4
+  n = binaural :f1, release: 14.5
+end
+
+pad_drum_sidechain_args = { :slope_below => 1.7, :slope_above => 0.6, :threshold => 0.4, :pre_amp => 1.3, :clamp_time => 0.03, :relax_time => 0.2 }
+sidechain pad_drum_sidechain_args, drums, glitch_pad, drop_this

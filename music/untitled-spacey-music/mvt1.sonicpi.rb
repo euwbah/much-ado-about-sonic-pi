@@ -1,3 +1,7 @@
+# Movement I: Sonic Scape
+# Composed / Programmed by euwbah
+
+# Set PATH to the directory of the downloaded files
 PATH = '/home/euwbah/Documents/Sonic Pi Projects/much-ado-about-sonic-pi/music/untitled-spacey-music/'
 def import(localdir)
   run_file PATH + localdir
