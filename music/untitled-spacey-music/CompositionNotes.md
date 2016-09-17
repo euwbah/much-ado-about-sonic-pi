@@ -6,8 +6,8 @@
 - [x] Synth layering
 - [x] FX Presets
 - [x] Alternate tuning systems
-- [ ] 29 / 8 time signature (15 + 14)
-- [ ] Improvised drum line with form & marked downbeats / upbeats
+- [x] 29 / 8 time signature (15 + 14)
+- [x] Improvised drum line with form & marked downbeats / upbeats
 - [ ] Motif Generator
 
 ### Song Structure:
@@ -22,11 +22,14 @@
 `|| 4D 4U 3D 3A | 2D 4D 3U 3A 3A || 4F 4U 3D 3A | 3D 3A 3A 3A 3A || Downbeat, Upbeat, Any Accent, Fill (no accent)`
 ##### Chord Progression
 Notes in brackets are notes anchoring the equivalent notes of the previous chord (because just intonation is used)
-`|    Fmaj9    |      %      | Abmaj9 (C G) | ??? `
+```
+|     Fmaj9     |      %      | Abmaj9 (C G)  |      %      |
+| Emaj7 (Ab Eb) |      %      | Fmin7 (Ab Eb) |      %      |
+```
 ##### Form:
 - 1 iteration of chords with just the glitched pads
 - Sudden entrance of drums and binaural reese bass
-- ??
+- DNB Cut, add plucks using motif generator
 
 ______________
 
@@ -47,12 +50,12 @@ Let's take the perfect fifth for example (for those who are already into microto
 However, most humans won't be able to hear distinctive pitches anymore when the frequency of a note is less than 16-20Hz. Instead, the "notes" will be perceived as just vibrations, since that's what 'sound' really is. Now, **this** is when the dissonance can really be heard. The sound when two flutes are unforgivingly out of tune, or the sound of a minor second (or even a microtonal diminished second, which is different than a 'diminished second' in standard music theory) -- they all have this 'phasing' sound in common. That is the sound of the two pitches very close in frequency, but actually, very far apart in the circle of consonances and disonnances (aka, the ubiquitous, overly said, underwhelmingly used Pythagorean circle of fifths). This is when the GCD is really a pathetically low frequency that you can even hear it affecting the sound from the meta scope and not the sound per se.
 
 *Sooooooo....* back to the topic on microtonality, there are two kinds:
-1. The one which questions the need for 12 and only 12 notes in an octave
+1. The one which questions the reason why there are 12 notes in an octave
 2. The one which only cares about the ratios between two notes, and disregards everything else, including standard tuning, the need for octaves at all, or perhaps even the need of a standard scale.
 
 The former is called 'xenharmonic' music. This is where people try to divide the octave by dividing it up from 5-TET, to 313-TET and everything in between.
 
-But, the type of microtonality that this, so far, untitled piece, is the latter kind. I wouldn't say this is the most exotic type of microtonality, but it is definitely not possible to play on any standard fixed-pitched instrument, even after re-mapping keys on a MIDI controller to fit it.
+But, the type of microtonality that this, so far, untitled piece, is of the latter. I wouldn't say this is the most exotic type of microtonality, but it is definitely not possible to play on any standard fixed-pitched instrument, even after re-mapping keys on a MIDI controller to fit it.
 
 This is due to the fact that if there are already so many different ratios (to be accurate, an infinite amount of them) to choose from, and yet everytime a new chord / key is used, the specific notes will all have to change their tuning with regards to that new root note, wouldn't it be indeed hard to actually play anything at all?
 
@@ -60,13 +63,13 @@ Well, before the 18th century, this was the type of tuning used. Well, they stil
 
 Of course, they didn't do that. So this restricted key modulation a lot (Which kind of explains why during the earlier periods of classical music (baroque, classical), there really wasn't any key modulation any further than two steps on the circle of fifths (id est, a major second up or down)).
 
-But now we have equal temperament. This meant that unless you have perfect pitch or a vocalist, all keys will sound and feel the same to you, respectively. So now we can modulate to any damn key we want, and start and end in any key. Well... this explains Jazz flourishing in the 19th century a *lot*.
+But now we have equal temperament. This meant that unless you have perfect pitch or are a vocalist, all keys will sound and feel the same to you. So now we can modulate to any key we want, and start and end in any key. This explains Jazz flourishing in the 20th century a *lot*.
 
 But there's a down side to tuning everything in 12 TET. Because now the logarithmic differences of frequencies between notes are now all the same, the characteristics of 'consonance' disappears. This is due to the way 12 TET is constructed:
-- Instead of having simple ratios to define what is 'consonance', 12-TET used octaves, the supposedly most consonant interval there is, and divided it into 12 parts
+- Instead of having simple ratios to define what is 'consonance', 12-TET uses octaves, the supposedly most consonant interval there is, and divides it into 12 parts
 - This means that now all the notes are irrational in relation to each other, because the 12th root of anything is without a doubt irrational, except for exponents of 12 themselves (aka octaves)
 
-This makes the very nice and pure sounding major third, which used to be a nice 5/4 ratio, now a 2^(4/12) : 1 (1.259921...), which is only ever so slightly sharp, although this difference of about 6 cents makes a whole world of difference. The 'phasing' in a C major triad of 12-TET is definitely noticeable, especially when one pays attention to the higher registers of the upper partials of the overtone series.
+This makes the very nice and pure sounding major third, which used to be a nice 5/4 ratio, now a 2^(4/12) : 1 (1.259921...), which is only ever so slightly sharp, although this difference of about 6 cents makes a whole world of difference. The 'phasing' in a C major triad of 12-TET is evident, especially when one pays attention to the higher registers of the upper partials of the overtone series.
 
 **Anyways....**, so here we are: In between two vastly different worlds, where in one you have pure consonances and appropriately-tensioned dissonances in a handful of keys, and everything else is really shit, and in the other, you could modulate to any key, but all keys sound equally as shitty (but not as shitty as the non-ET) as the next.
 

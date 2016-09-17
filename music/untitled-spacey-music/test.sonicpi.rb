@@ -17,6 +17,4 @@ set_control_delta! 0.004
 
 openHatInstance = nil
 
-synths, filter = binaural :f1, sustain: 1, attack: 0, pulse_width: 0.5, centre: 1000
-
-c synths, 
+synths, filter, note = binaural :f1, sustain: 1, attack: 0, pulse_width: 0.5, centre: 1000

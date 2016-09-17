@@ -108,7 +108,7 @@ end
 # XXX: BAAAASSSSSSS!!!!
 drop_this = Proc.new do
   sleep 14.5 * 4
-  n = binaural :f1, release: 14.5
+  synths, filter, note = binaural :f1, release: 14.5
 end
 
 pad_drum_sidechain_args = { :slope_below => 1.7, :slope_above => 0.6, :threshold => 0.4, :pre_amp => 1.3, :clamp_time => 0.03, :relax_time => 0.2 }

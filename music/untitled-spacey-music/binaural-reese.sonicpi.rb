@@ -1,5 +1,6 @@
 # Plays the binaural bass and returns an instance of itself in the form of
 # [synth_instances::Synth Nodes, filter_instance::FX node]
+# NOTE: The sharper synth instance is first in the synth_instaces array
 define :binaural do |note, **opts|
   use_synth :pulse
   use_synth_defaults pulse_width: 0.8, cutoff: 100
@@ -23,5 +24,16 @@ define :binaural do |note, **opts|
     end
   end
 
-  return [synth_instances, filter]
+  return [synth_instances, filter, note]
+end
+
+# For controlling both note and reese amount
+def ctl_bin_note synth_instances, note, reese=1, slide_time=nil
+  sharper, flatter = synth_instances
+  if slide
+    c synth_instances, note_slide: slide_time
+  end
+
+  control sharper, note: note + reese * 0.1
+  control flatter, note: note - reese * 0.1
 end
