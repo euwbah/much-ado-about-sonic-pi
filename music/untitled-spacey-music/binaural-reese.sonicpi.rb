@@ -6,7 +6,7 @@ define :binaural do |note, **opts|
   use_synth_defaults pulse_width: 0.8, cutoff: 100
   reese = opts[:reese] || 1
   amp = opts[:amp] || 1
-  freq = opts[:centre] || 400
+  freq = opts[:freq] || 400
   eq_params = [
     {:freq => 200, :res => 0, :db => 21},
     {:freq => 14000, :res => 0.2, :db => 18}
@@ -28,12 +28,26 @@ define :binaural do |note, **opts|
 end
 
 # For controlling both note and reese amount
-def ctl_bin_note synth_instances, note, reese=1, slide_time=nil
-  sharper, flatter = synth_instances
+def bin_note instance, reese=1, slide_time=nil
+  sharper, flatter = instance[0]
+  note = instance[2]
   if slide
     c synth_instances, note_slide: slide_time
   end
 
   control sharper, note: note + reese * 0.1
   control flatter, note: note - reese * 0.1
+end
+
+def bin_freq instance, freq
+  filter = instance[1]
+  control filter, freq: hz_to_midi(freq)
+end
+
+def bin_c instance, *args
+  c instance[0], *args
+end
+
+def bin_ct instance, time, *args
+  ct time, instance[0], *args
 end
