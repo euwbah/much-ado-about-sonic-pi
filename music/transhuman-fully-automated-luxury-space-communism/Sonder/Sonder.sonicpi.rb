@@ -1,155 +1,102 @@
-set_volume! 0.05
+set_volume! 0.1
 
-sleep 0.1
+use_debug false
 
-define :n do |x|
-  octave = x[-1].to_i
-  note = x[0..-2].downcase.to_sym
-  freqs = [:a, :au, :as, :bb, :bd, :b, :bu, :cd, :c,
-           :cu, :cs, :db, :dd, :d, :du, :ds, :eb, :ed, :e,
-           :eu, :fd, :f, :fu, :fs, :gb, :gd, :g, :gu, :gs,
-           :ab, :ad]
+sleep 0.01
 
-  idx = freqs.index(note);
-  basefreq = 440.0 * 2.0**(idx / 31.0)
-  octave -= 4.0
-  if idx >= 7
-    octave -= 1.0
-  end
-
-  basefreq *= 2.0**octave
-
-  return hz_to_midi(basefreq)
-end
+use_bpm 84
 
 #@ play p 0
 
-define :p do |note, *args|
-  note = [note] if not note.kind_of?(Array)
-  return play note.map{|nt| n(nt)}, *args
-
+define :chd do | name |
+  
 end
 
-define :fives do
-  with_fx :rlpf, cutoff: 90, res: 0.1 do
-    use_synth :mod_fm
-    use_synth_defaults divisor: 0.5004, depth: 1, mod_range: 24, mod_pulse_width: 0.08
-    x = 0
-    ct = 20
-    mult = 5
-    chd1 = ring(:b3, :c4, :e4, :g4, :b4)
-    chd2 = ring(:bb3, :c4, :eb4, :g4, :bb4)
-    chd3 = ring(:ab3, :c4, :eb4, :f4, :eb4)
-    currchd = nil
-    (ct * mult - x).times do
-      currchd =
-        case (x / mult)
-        when 0, 8
-          chd1
-        when 4, 12
-          chd2
-        when 16
-          chd3
-        else
-          currchd
-        end
-      p currchd[x], amp: 0.7 + 0.1 * (x % mult) + rand(0.12) - 0.06
-      x += 1
-      sleep 1.0 / mult
-    end
-  end
-end
+abmaj9 = [:ab3, :c4, :f4, :g4, :bb4]
+gmin9 = [:g3, :d4, :fd4, :a4, :bb4]
+fmin9 = [:f3, :c4, :eb4, :g4, :bb4]
+dbh7 = [:db4, :f4, :gb4, :bd4]
+csuss = [:c4, :fu4, :g4, :as4]
+csus711 = [:c4, :f4, :g4, :bb4]
 
-define :fours do
-  with_fx :rlpf, cutoff: 90, res: 0.6 do
-    use_synth :tri
-    x = 0
-    ct = 20
-    mult = 4
-    chd1 = ring(:d5, :b4, :g4, :e4)
-    chd2 = ring(:d5, :bb4, :g4, :eb4)
-    chd3 = ring(:d5, :bb4, :g4, :f4)
-    chd4 = ring(:d5, :c5, :bb4, :g4)
-    currchd = nil
-    (ct * mult - x).times do
-      currchd =
-        case x / mult
-        when 0, 8
-          chd1
-        when 4, 12
-          chd2
-        when 16
-          chd3
-        when 20
-          chd4
-        else
-          currchd
-        end
-      p currchd[x], amp: 0.8 - 0.1 * (x % mult) + rand(0.12) - 0.06
-      x += 1
-      sleep 1.0 / mult
-    end
-  end
-end
+p_abmaj9 = abmaj9 + [:ab2]
+p_gmin9 = gmin9 + [:g2]
+p_fmin9 = fmin9 + [:f2]
+p_dbh7 = dbh7 + [:db3]
+p_csuss = csuss + [:c3]
+p_csus711 = csus711 + [:c3]
 
-define :glitch do
-  in_thread do
-    with_fx :bitcrusher, bits: 4, sample_rate: 15184 do
-      with_fx :reverb, room: 0.99, damp: 0, mix: 0.5, amp: 0.3 do
-        with_fx :vowel, vowel_sound: 2, mix: 0.1 do |vowel|
-          use_synth :fm
-          x = p :c4, amp: 0.1, sustain: 10
-          use_synth :bnoise
-          y = play :c7, amp: 3, sustain: 10
-          200.times do
-            num = rand * 0.9 + 0.1
-            control x, note: 90 + num * 50.0, divisor: num ** 3, amp: num, pan: rand(-1..1)
-            control y, res: num / 1.0, cutoff: num * 40 + 90, amp: num * 3
-            control vowel, vowel_sound: rand_i(1..6), voice: rand_i(0..5)
-            sleep (1 - num) / 8.0
-          end
-          kill x
-          kill y
+lerper :pulsecut, 50
+
+with_fx :compressor, relax_time: 0.2, threshold: 0.3 do
+  live_loop :pulse do
+    with_random_seed ring(1337)[look] do
+      oldcut = pulsecut['val']
+      lerp pulsecut, 80, 110, 8
+      with_fx :echo, phase: 0.625, mix: 0.5, decay: 4 do
+        with_fx :rlpf, cutoff: oldcut, cutoff_slide: 15, res: 0.5 do | pulselpf |
+          control pulselpf, cutoff: pulsecut['val']
+          tick
+          pulser ring(p_fmin9, p_abmaj9, p_csuss, p_gmin9)[look], 20, 0.2, permute([1, 0, 0.9, 0.1, 0.4], 5)
         end
       end
     end
   end
-end
 
-define :pulser do | notes, times, dur, amps=[1], *params |
+  live_loop :kicks do
+    with_random_seed ring(*range(0, 16))[look] do
+      sync :kick
+      tick
+      sample :bd_fat, amp: 3
+      sample :bd_fat, amp: 2, rate: 1.3
+      if look % 2 != 1
+        sleep 1
+      else
+        flag1 = rand < 0.6
+        if flag1
+          sleep 0.4
+          sample :bd_fat, amp: 1, rate: 1.7
+          sleep 0.2
+          sample :bd_fat, amp: 2, rate: 1.4
+          sleep 0.4
+        else
+          sleep 0.65
+          sample :bd_fat, amp: 2, rate: 1.7
+          sleep 0.35
+        end
+      end
 
-  use_synth :dsaw
-  amp_ring = ring(*amps)
-
-  with_fx :reverb, room: 0.7, damp: 0.6, mix: 0.6 do
-
-    times.times { | count |
-      p notes, {attack: 0.01, release: dur * 1.1, sustain: 0, amp: amp_ring[count]}, *params
-      sleep dur
-    }
-
-  end
-end
-
-with_fx :rlpf, cutoff: 70, cutoff_slide: 1, res: 0.5 do |lpf|
-  in_thread do
-    cut = 70
-    12.times do
-      control lpf, cutoff: cut
-      cut += 5
-      sleep 1
+      # sleep 3
     end
   end
-  pulser [:c4, :fu4, :g4, :as4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
-  pulser [:c4, :f4, :g4, :bb4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
-  pulser [:c4, :fu4, :g4, :as4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
-  pulser [:c4, :f4, :g4, :bb4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
-  2.times do |count|
-    pulser [:ab3, :c4, :f4, :g4, :bb4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
-    pulser [:ab3, :c4, :eb4, :g4, :bb4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
-    pulser [:c4, :fu4, :g4, :as4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
-    pulser [:c4, :f4, :g4, :bb4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5] if count == 0
-  end
-  pulser [:c4, :e4, :g4, :a4], 15, 0.2, [1, 0.7, 0.9, 0.7, 0.5]
 
+  live_loop :snares do
+    with_fx :gverb, room: 100, mix: 0.2 do
+      sleep 1
+      sample :sn_dolf
+      sleep 1
+      cue :kick
+    end
+  end
+end
+
+live_loop :arp do
+  with_random_seed ring(1337)[look] do
+    tick
+    use_synth :dpulse
+    subdiv = 5
+    beats = 5*4
+    phrase = 4
+    phrase = phrase || beats
+    notes = ring(*permute(ring(fmin9, abmaj9, csuss, gmin9)[look], phrase))
+    with_fx :rhpf, cutoff: 79, res: 0.5 do
+      with_fx :gverb, room: 300, mix: 0.95 do
+        beats.times do | x |
+
+          p notes[x], amp: 0.2, release: 0.15, pulse_width: 0.45, detune: 0.05
+          sleep 1.0 / subdiv
+        end
+      end
+    end
+  end
 end
